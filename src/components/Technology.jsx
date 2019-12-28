@@ -1,62 +1,119 @@
 import React, { Component } from "react";
 import { Form, Button } from "semantic-ui-react";
-import Slide from "react-reveal/Slide";
+import Fade from "react-reveal/Fade";
+import questionsOptionsArray from "../questions_options_array.json";
+
 class Technology extends Component {
+  quesData = questionsOptionsArray;
+  changeQuesData = this.quesData;
+  currentTechString = 0;
+  handleRadioValue1 = null;
+  answerArr = this.quesData;
+  questionCount = 3;
+
   saveAndContinue = e => {
     e.preventDefault();
-    this.props.nextStep();
+    this.currentTechString = this.handleRadioValue1;
+    this.setState({ state: this.state });
+    if (
+      typeof document === "object" &&
+      document.getElementsByTagName("button").length > 0
+    ) {
+      document.getElementsByTagName("button")[0].classList.add("hidden");
+    }
   };
+  handleRadioChange = selectVal => {
+    this.handleRadioValue1 = selectVal;
+    if (
+      typeof document === "object" &&
+      document.getElementsByClassName("hidden").length > 0
+    ) {
+      document.getElementsByClassName("hidden")[0].classList.remove("hidden");
+    }
+    this.answerArrFunc(this.answerArr, selectVal);
+
+    localStorage["answerArr"] = JSON.stringify(this.answerArr);
+  };
+  answerArrFunc = (answerArr, selectVal) => {
+    for (var j = 0; j < answerArr.length; j++) {
+      if (typeof answerArr[j].select === "undefined") {
+        if (answerArr[j].name === selectVal) {
+          answerArr[j].select = true;
+        } else if (answerArr[j]["name"] !== selectVal) {
+          answerArr[j].select = false;
+          delete answerArr[j].children;
+        }
+      } else if (answerArr[j].select === true) {
+        this.answerArrFunc(answerArr[j].children, selectVal);
+      }
+    }
+  };
+
+  questionRender = answerOptions => {
+    if (typeof answerOptions.body === "object") {
+      return answerOptions.body.map(d => (
+        <div key={d.idunique} className="col-md-4">
+          <input
+            type="radio"
+            name={d.fieldname}
+            value={d.name}
+            id={d.idd}
+            onChange={() => this.handleRadioChange(d.name)}
+          />
+          <label htmlFor={d.idd}>
+            <img src={d.img} alt={d.name} />
+          </label>
+          {d.name}
+        </div>
+      ));
+    } else {
+      this.props.nextStep();
+    }
+  };
+
+  nextStepTr = (string, ques) => {
+    let nextAns = "";
+    if (string === 0) {
+      return {
+        body: ques
+      };
+    } else if (string !== 0) {
+      const quesLength = Object.keys(ques).length;
+      for (var i = 0; i <= quesLength; i++) {
+        for (var key in ques[i]) {
+          if (
+            ques[i]["name"] === string &&
+            typeof ques[i]["children"] === "object"
+          ) {
+            nextAns = ques[i]["children"];
+            break;
+          } else if (typeof ques[i]["children"] === "undefined") {
+            break;
+          }
+        }
+      }
+      return {
+        body: nextAns
+      };
+    }
+  };
+  componentDidMount() {
+    document.getElementsByTagName("button")[0].classList.add("hidden");
+  }
 
   render() {
     const data = {
-      content: " Select the technologies you know today",
-      body: [
-        {
-          uniqueid: 3,
-          id: 3,
-          value: "docker",
-          handleChange: "Docker",
-          component: "A : Docker"
-        },
-        {
-          id: 4,
-          uniqueid: 4,
-          value: "kubernetes",
-          handleChange: "Kubernetes",
-          component: " B : Kubernetes"
-        },
-        {
-          id: 5,
-          uniqueid: 5,
-          value: "openshift",
-          handleChange: "OpenShift",
-          component: "C : OpenShift"
-        }
-      ]
+      content: "What technologies you know?"
     };
-    let result = true;
-    const listItems = data.body.map(d => (
-      <div key={d.uniqueid} className="col-md-4">
-        <input
-          type="checkbox"
-          name="technology"
-          value={d.value}
-          id={d.id}
-          onChange={this.props.handleChange(`${d.handleChange}`, d.id)}
-        />
-        <label htmlFor={d.id}>
-          <img
-            src={require(`../images/${d.handleChange}.png`)}
-            alt={d.handleChange}
-          />
-        </label>
-        {d.component}
-      </div>
-    ));
-
+    const answerOptions = this.nextStepTr(
+      this.currentTechString,
+      this.changeQuesData
+    );
+    const listQuesOptions = this.questionRender(answerOptions);
+    this.changeQuesData = answerOptions.body;
     return (
       <Form color="blue" className="cc-con">
-        <Slide bottom>
+        <Fade bottom>
           <Form.Field>
             <label>
               <span
@@ -67,7 +124,7 @@ class Technology extends Component {
                   data-qa="question-header-counter"
                   className="text___Text-sc-1t2ribu-0-div cLiylc"
                 >
-                  5
+                  {++this.questionCount}
                 </div>
                 <div className="spacer__Spacer-sc-11bdvt0-0 iCbFsn">
                   <div
@@ -83,12 +140,14 @@ class Technology extends Component {
               </span>
               {data.content}
             </label>
-            <div className="row check-container">{listItems}</div>
-            {result === true && (
-              <Button onClick={this.saveAndContinue}>Ok </Button>
-            )}
+            <div className="row check-container">{listQuesOptions}</div>
+            <div className="row radiobox"></div>
+
+            <Button className="hidden" onClick={this.saveAndContinue}>
+              Ok{" "}
+            </Button>
           </Form.Field>
-        </Slide>
+        </Fade>
       </Form>
     );
   }

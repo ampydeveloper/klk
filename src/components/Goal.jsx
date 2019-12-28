@@ -8,7 +8,7 @@ class Goal extends Component {
   };
   render() {
     const data = {
-      content: "Whats your goal?",
+      content: "What technologies you know?",
       body: [
         {
           idunique: 1,

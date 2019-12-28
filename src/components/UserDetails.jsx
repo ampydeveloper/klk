@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Button } from "semantic-ui-react";
-import Slide from "react-reveal/Slide";
+import Fade from "react-reveal/Fade";
 class UserDetails extends Component {
   saveAndContinue = e => {
     e.preventDefault();
@@ -14,10 +14,11 @@ class UserDetails extends Component {
   };
 
   render() {
+    localStorage["answerArr"] = "";
     const { values } = this.props;
     return (
       <Form id="userDetails" color="green">
-        <Slide bottom>
+        <Fade bottom>
           <div className="kodekloud">
             {" "}
             <img src="../images/kodekloud.png" alt="" />{" "}
@@ -58,16 +59,15 @@ class UserDetails extends Component {
             <input
               required
               type="text"
-              placeholder="Type your answer here..."
+              placeholder="Type your name here..."
               onChange={this.props.handleChange("firstName")}
-              // defaultValue={values.firstName}
               value={values.firstName}
             />
             {values.firstName.length > 0 && (
               <Button onClick={this.saveAndContinue}>OK</Button>
             )}
           </Form.Field>
-        </Slide>
+        </Fade>
       </Form>
     );
   }

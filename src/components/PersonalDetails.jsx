@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Button } from "semantic-ui-react";
-import Slide from "react-reveal/Slide";
+import Fade from "react-reveal/Fade";
 
 class PersonalDetails extends Component {
   saveAndContinue = e => {
@@ -36,7 +36,7 @@ class PersonalDetails extends Component {
     };
     return (
       <Form color="blue">
-        <Slide bottom>
+        <Fade bottom>
           <Form.Field>
             <label>
               <span
@@ -77,7 +77,7 @@ class PersonalDetails extends Component {
               <Button onClick={this.saveAndContinue}>OK</Button>
             )}
           </Form.Field>
-        </Slide>
+        </Fade>
       </Form>
     );
   }
