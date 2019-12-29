@@ -80,6 +80,7 @@ class Technology extends Component {
     } else if (string !== 0) {
       const quesLength = Object.keys(ques).length;
       for (var i = 0; i <= quesLength; i++) {
+      // eslint-disable-next-line no-unused-vars
         for (var key in ques[i]) {
           if (
             ques[i]["name"] === string &&
